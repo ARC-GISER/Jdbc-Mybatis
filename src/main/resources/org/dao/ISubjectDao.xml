@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dao.ISubjectDao">
+    <resultMap id="subjectMap" type="Subject">
+        <!--主键字段的对应-->
+        <id property="id" column="id"></id>
+        <!--非主键字段的对应-->
+        <result property="subjectname" column="subjectname"></result>
+        <result property="classhour" column="classhour"></result>
+        <result property="gradeid" column="gradeid"></result>
+        <result property="gname" column="gname"></result>
+        <!--配置subject对象中的对象集合-->
+        <!--<collection property="grades" ofType="grade">
+            <id column="id" property="id"></id>
+            <result column="gname" property="gname"></result>
+        </collection>-->
+    </resultMap>
+
+    <!-- 抽取重复的sql 语句-->
+    <sql id="defaultSubject">
+        select * from s_subject
+    </sql>
+
+    <!-- 配置查询所有-->
+    <select id="findAll" resultType="Subject">
+        select s.* from s_subject s
+    </select>
+    <!-- 关联年级表查询-->
+    <select id="findAllByCondition" resultMap="subjectMap">
+        select s.*,g.gname from s_subject s left join s_grade g on s.gradeid = g.id where s.id = #{id}
+    </select>
+
+    <!-- 配置新增学生-->
+    <insert id="saveSubject" parameterType="Subject">
+        insert into s_subject(subjectname,classhour,gradeid)
+        values (#{subjectname},#{classhour},#{gradeid})
+    </insert>
+
+    <!-- 修改数据-->
+    <update id="updateSubject" parameterType="Subject">
+        update s_subject set subjectname=#{subjectname},classhour=#{classhour},gradeid=#{gradeid} where id=#{id}
+    </update>
+
+    <!-- 删除数据-->
+    <delete id="deleteSubject" parameterType="long">
+        delete from s_subject where id=#{id}
+    </delete>
+
+    <!-- 根据id 查询-->
+    <select id="findById" resultType="Subject" parameterType="long">
+        select * from s_subject where id=#{id}
+    </select>
+
+    <!--根据年级号查询-->
+    <select id="findByGradeId" resultType="Subject" parameterType="int">
+        select * from s_subject where gradeid = #{gradeid}
+    </select>
+    <!-- 模糊查询（根据名称）-->
+    <select id="findByName" parameterType="String" resultType="Subject">
+        select * from s_subject where subjectname like CONCAT(CONCAT('%', #{subjectname}), '%')
+    </select>
+
+    <!-- 查询总记录数-->
+    <select id="findTotal" resultType="int">
+        select count(*) from s_subject;
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findSubjectByLimit" resultType="Subject">
+        select * from s_subject limit #{startIndex},#{pageSize}
+    </select>
+
+    <!-- -->
+</mapper>

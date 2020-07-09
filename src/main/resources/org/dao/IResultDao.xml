@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dao.IResultDao">
+    <resultMap id="ResultMap" type="Result">
+        <!-- 主键字段对应-->
+        <id property="id" column="id"></id>
+        <result property="exam_date" column="exam_date"></result>
+        <result property="score" column="score"></result>
+        <result property="st_id" column="st_id"></result>
+        <result property="sb_id" column="sb_id"></result>
+        
+        <association property="stu" javaType="Student" column="st_id" select="org.dao.IStudentDao.findById"></association>
+        <association property="sub" javaType="Subject" column="sb_id" select="org.dao.ISubjectDao.findById"></association>
+    </resultMap>
+
+    <!-- 关联查询所有-->
+    <select id="findAllByCondition" resultMap="ResultMap">
+        select e.score from s_examresult e where id=#{id}
+    </select>
+</mapper>

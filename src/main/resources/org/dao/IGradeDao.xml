@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dao.IGradeDao">
+    <resultMap id="gradeMap" type="Grade">
+        <!--主键字段的对应-->
+        <id property="id" column="id"></id>
+        <!--非主键字段的对应-->
+        <result property="gname" column="gname"></result>
+
+        <collection property="sub" ofType="Subject" select="org.dao.ISubjectDao.findByGradeId" column="id">
+            <!--<id property="id" column="id"></id>
+            <result property="subjectname" column="subjectname"></result>
+            <result property="classhour" column="classhour"></result>
+
+            <result property="gname" column="gname"></result>-->
+        </collection>
+        <!--<association property="sub" javaType="Subject" column="id" select="org.dao.ISubjectDao.findByGradeId"></association>-->
+    </resultMap>
+
+    <!--抽取重复的sql-->
+    <sql id="defaultGrade">
+        select * from s_grade
+    </sql>
+
+    <!-- 配置增加数据-->
+    <insert id="saveGrade" parameterType="Grade">
+        insert into s_grade(gname) values(#{gname})
+    </insert>
+
+    <!--配置修改数据-->
+    <update id="updateGrade" parameterType="Grade">
+        update s_grade set gname=#{gname} where id=#{id}
+    </update>
+
+    <!--配置删除数据-->
+    <delete id="deleteGrade" parameterType="int">
+        delete from s_grade where id=#{id}
+    </delete>
+
+    <!--配置查询所有数据-->
+    <select id="findAll" resultMap="gradeMap">
+        select * from s_grade
+    </select>
+
+    <!--配置查询总记录-->
+    <select id="findCount" resultType="int">
+        select count(*) from s_grade
+    </select>
+
+    <!--分页查询-->
+    <select id="findByLimit" resultType="Grade" parameterType="int">
+        select * from s_grade order by limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--关联查询-->
+    <select id="findByCondition" resultMap="gradeMap">
+        select * from s_grade g inner join s_subject s on g.id = s.gradeid where g.id = #{id}
+    </select>
+</mapper>

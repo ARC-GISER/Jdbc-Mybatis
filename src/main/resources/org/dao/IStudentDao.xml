@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dao.IStudentDao">
+    <resultMap id="studentMap" type="Student">
+        <!-- 主键字段的对应-->
+        <id property="id" column="stuno"></id>
+        <!-- 非主键字段的对应-->
+        <result property="sname" column="sname"></result>
+        <result property="sex" column="sex"></result>
+        <result property="telephone" column="telephone"></result>
+        <result property="qq" column="qq"></result>
+        <result property="wechat" column="wechat"></result>
+        <result property="gradeid" column="gradeid"></result>
+        <result property="enterdate" column="enterdate"></result>
+        <result property="fromcity" column="fromcity"></result>
+        <result property="birthday" column="birthday"></result>
+        <result property="address" column="address"></result>
+        <result property="pass" column="pass"></result>
+        <result property="idcardpic" column="idcardpic"></result>
+        <!-- 配置student对象中subjects集合的映射-->
+        <collection property="results" ofType="result">
+            <id column="id" property="id"></id>
+            <result column="exam_date" property="exam_date"></result>
+            <result column="score" property="score"></result>
+            <result column="st_id" property="sb_id"></result>
+        </collection>
+    </resultMap>
+
+    <!--抽取重复的sql 语句-->
+    <sql id="defaultStudent">
+      select * from s_student
+    </sql>
+
+    <!-- 配置查询所有-->
+    <select id="findAll" resultMap="studentMap">
+        select * from s_student s left outer join s_examresult e on s.`stuno` = e.`st_id`
+    </select>
+    <select id="findById" resultType="Student">
+        select * from s_student where stuno=#{id}
+    </select>
+    <!-- 保存（新增）学生-->
+    <insert id="saveStudent" parameterType="Student">
+
+        insert into s_student(sname,sex,telephone,qq,wechat,gradeid,enterdate,fromcity,birthday,address,pass,idcardpic)
+        values (#{sname},#{sex},#{telephone},#{qq},#{wechat},#{gradeid},#{enterdate},#{fromcity},#{birthday},#{address},#{pass},#{idcardpic})
+    </insert>
+
+    <!-- 更新操作-->
+    <select id="update" resultMap="studentMap">
+
+    </select>
+
+    <!--获取用户的总记录条数-->
+    <select id="findTotal" resultType="int" >
+        select count(id) from user
+    </select>
+
+    <!-- 根据姓名、QQ号、微信号 模糊查询-->
+    <select id="findByCondition" resultType="Student">
+        select * from s_student where sname like CONCAT('%', #{sname}, '%') and
+        qq like CONCAT('%', #{qq}, '%') and wechat like CONCAT('%', #{wechat}, '%')
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--根据姓名、QQ号、微信号 模糊查询学生数量-->
+    <select id="findByCondition2" resultType="int">
+        select count(*) from s_student where sname like CONCAT('%', #{sname}, '%') and
+        qq like CONCAT('%', #{qq}, '%') and wechat like CONCAT('%', #{wechat}, '%')
+    </select>
+</mapper>
